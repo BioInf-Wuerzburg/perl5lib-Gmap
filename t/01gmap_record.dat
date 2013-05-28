@@ -1,0 +1,95 @@
+>1 some desc
+Paths (1):
+  Path 1: query 1..1000 (1000 bp) => genome ref000001|lambda_NEB3011:1,000..1 (-1000 bp)
+    cDNA direction: indeterminate
+    Genomic pos: LpGen:1,000..1 (- strand)
+    Accessions: ref000001|lambda_NEB3011:1..1,000 (out of 48502 bp)
+    Number of exons: 1
+    Coverage: 100.0 (query length: 1000 bp)
+    Trimmed coverage: 100.0 (trimmed length: 1000 bp, trimmed region: 1..1000)
+    Percent identity: 100.0 (1000 matches, 0 mismatches, 0 indels, 0 unknowns)
+    Translation: 371..910 (179 aa)
+    Amino acid changes: 
+
+Alignments:
+  Alignment for path 1:
+
+    -ref000001|lambda_NEB3011:1000-1  (1-1000)   100%
+
+>2
+Paths (4): *** Possible chimera with breakpoint at 1000
+  Path 1: query 1..1000 (1000 bp) => genome ref000001|lambda_NEB3011:1..1,000 (1000 bp)
+    cDNA direction: indeterminate
+    Genomic pos: LpGen:1..1,000 (+ strand)
+    Accessions: ref000001|lambda_NEB3011:1..1,000 (out of 48502 bp)
+    Number of exons: 1
+    Coverage: 33.3 (query length: 3000 bp)
+    Trimmed coverage: 33.3 (trimmed length: 3000 bp, trimmed region: 1..3000)
+    Percent identity: 100.0 (1000 matches, 0 mismatches, 0 indels, 0 unknowns)
+    Amino acid changes: 
+
+  Path 2: query 1001..3000 (2000 bp) => genome ref000001|lambda_NEB3011:1..4,000 (4000 bp)
+    cDNA direction: sense
+    Genomic pos: LpGen:1..4,000 (+ strand)
+    Accessions: ref000001|lambda_NEB3011:1..4,000 (out of 48502 bp)
+    Number of exons: 2
+    Coverage: 66.7 (query length: 3000 bp)
+    Trimmed coverage: 66.7 (trimmed length: 3000 bp, trimmed region: 1..3000)
+    Percent identity: 100.0 (2000 matches, 0 mismatches, 0 indels, 0 unknowns)
+    Translation: 1240..2000 (253 aa)
+    Amino acid changes: 
+
+Alignments:
+  Alignment for path 1:
+
+    +ref000001|lambda_NEB3011:1-1000  (1-1000)   100%
+
+  Alignment for path 2:
+
+    +ref000001|lambda_NEB3011:1-999  (1001-1999)   100% ==   ...2000...  0.000, 0.001
+    +ref000001|lambda_NEB3011:3000-4000  (2000-3000)   100%
+
+>m111006_202713_42141_c100202382555500000315044810141104_s1_p0/318/0_1136.5 SUBSTR:5,1074 SUBSTR:297,43
+Paths (1):
+  Path 1: query 1..43 (43 bp) => genome 16:67,864,391..67,864,433 (43 bp)
+    cDNA direction: indeterminate
+    Genomic pos: hsapiens:2,477,681,502..2,477,681,544 (+ strand)
+    Accessions: 16:67,864,391..67,864,433 (out of 90354753 bp)
+    Number of exons: 1
+    Coverage: 100.0 (query length: 43 bp)
+    Trimmed coverage: 100.0 (trimmed length: 43 bp, trimmed region: 1..43)
+    Percent identity: 100.0 (43 matches, 0 mismatches, 0 indels, 0 unknowns)
+    Translation: 2..43 (14 aa)
+    Amino acid changes: 
+
+Alignments:
+  Alignment for path 1:
+
+    +16:67864391-67864433  (1-43)   100%
+
+>m111006_202713_42141_c100202382555500000315044810141104_s1_p0/318/0_1136.6 SUBSTR:5,1074 SUBSTR:344,28
+Paths (0):
+
+Alignments:
+>m111006_202713_42141_c100202382555500000315044810141104_s1_p0/321/0_1046.1 SUBSTR:237,639 SUBSTR:0,627
+Paths (1):
+  Path 1: query 1..627 (627 bp) => genome 17:73,261,964..73,258,044 (-3921 bp)
+    cDNA direction: antisense
+    Genomic pos: hsapiens:2,573,433,828..2,573,429,908 (- strand)
+    Accessions: 17:73,258,044..73,261,964 (out of 81195210 bp)
+    Number of exons: 5
+    Coverage: 100.0 (query length: 627 bp)
+    Trimmed coverage: 100.0 (trimmed length: 627 bp, trimmed region: 1..627)
+    Percent identity: 100.0 (627 matches, 0 mismatches, 0 indels, 0 unknowns)
+    Translation: 626..1 (209 aa)
+    Amino acid changes: 
+
+Alignments:
+  Alignment for path 1:
+
+    -17:73261964-73261783  (1-182)   100% <-   ...2194...  0.998, 0.990
+    -17:73259588-73259421  (183-350)   100% <-   ...472...  0.998, 0.996
+    -17:73258948-73258885  (351-414)   100% <-   ...115...  0.993, 0.984
+    -17:73258769-73258578  (415-606)   100% <-   ...513...  0.999, 0.990
+    -17:73258064-73258044  (607-627)   100%
+
