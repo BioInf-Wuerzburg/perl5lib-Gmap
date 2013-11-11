@@ -6,6 +6,7 @@ use strict;
 use warnings;
 
 use Test::More;
+use Test::Deep;
 use Data::Dumper;
 
 use File::Basename;
@@ -39,7 +40,6 @@ my $Class = 'Gmap::Record';
 
 my $Dat = do { local $/; local @ARGV = $Dat_file; <> }; # slurp data to string
 my @Dat = split(/(?<=\n)(?=>)/, $Dat);
-
 my @Dmp = do "$Dmp_file"; # read and eval the dumped structure
 
 #--------------------------------------------------------------------------#

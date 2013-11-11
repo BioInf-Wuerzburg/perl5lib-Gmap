@@ -93,3 +93,15 @@ Alignments:
     -17:73258769-73258578  (415-606)   100% <-   ...513...  0.999, 0.990
     -17:73258064-73258044  (607-627)   100%
 
+>p4_f1[d] SUBSTR:0,5247 SUBSTR:1808,3432 OID:m120114_011938_42177_c100247042550000001523002504251220_s1_p0/74224/0_5529.1
+Paths (1):
+  Path 1: query 1..3432 (3432 bp) => genome gi|49175990|ref|NC_000913.2|:3,940,929..3,937,498 (-3432 bp)
+    cDNA direction: indeterminate
+    Genomic pos: EcGen:3,940,929..3,937,498 (- strand)
+    Accessions: gi|49175990|ref|NC_000913.2|:3,937,498..3,940,929 (out of 4639675 bp)
+    Number of exons: 1
+    Coverage: 100.0 (query length: 3432 bp)
+    Trimmed coverage: 100.0 (trimmed length: 3432 bp, trimmed region: 1..3432)
+    Percent identity: 100.0 (3431 matches, 1 mismatches, 0 indels, 0 unknowns)
+    Translation: 2295..3431 (379 aa)
+    Amino acid changes: 

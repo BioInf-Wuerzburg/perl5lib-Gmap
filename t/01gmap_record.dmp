@@ -29,7 +29,9 @@
                          'accessions' => 'ref000001|lambda_NEB3011:1..1,000 (out of 48502 bp)',
                          'aln_idy' => '100.0',
                          'qry_trimmed_to' => '1000',
-                         'qry_cov' => '100.0'
+                         'qry_cov' => '100.0',
+                         'ref_len' => '48502',
+                         'ref_id' => 'ref000001|lambda_NEB3011'
                        }
                      ],
           'chimera' => 0
@@ -64,7 +66,9 @@
                          'accessions' => 'ref000001|lambda_NEB3011:1..1,000 (out of 48502 bp)',
                          'qry_trimmed_to' => '3000',
                          'aln_idy' => '100.0',
-                         'qry_cov' => '33.3'
+                         'qry_cov' => '33.3',
+                         'ref_len' => '48502',
+                         'ref_id' => 'ref000001|lambda_NEB3011'
                        },
                        {
                          'aln_ma' => '2000',
@@ -91,7 +95,9 @@
                          'accessions' => 'ref000001|lambda_NEB3011:1..4,000 (out of 48502 bp)',
                          'qry_trimmed_to' => '3000',
                          'aln_idy' => '100.0',
-                         'qry_cov' => '66.7'
+                         'qry_cov' => '66.7',
+                         'ref_len' => '48502',
+                         'ref_id' => 'ref000001|lambda_NEB3011'
                        }
                      ],
           'chimera' => 1
@@ -127,7 +133,9 @@
                          'accessions' => '16:67,864,391..67,864,433 (out of 90354753 bp)',
                          'qry_trimmed_to' => '43',
                          'aln_idy' => '100.0',
-                         'qry_cov' => '100.0'
+                         'qry_cov' => '100.0',
+                         'ref_len' => '90354753',
+                         'ref_id' => '16'
                        }
                      ],
           'chimera' => 0
@@ -169,8 +177,49 @@
                          'accessions' => '17:73,258,044..73,261,964 (out of 81195210 bp)',
                          'qry_trimmed_to' => '627',
                          'aln_idy' => '100.0',
-                         'qry_cov' => '100.0'
+                         'qry_cov' => '100.0',
+                         'ref_len' => '81195210',
+                         'ref_id' => '17'
+                         
                        }
                      ],
           'chimera' => 0
-}
+},
+{
+          'desc' => 'SUBSTR:0,5247 SUBSTR:1808,3432 OID:m120114_011938_42177_c100247042550000001523002504251220_s1_p0/74224/0_5529.1',
+          'byte_offset' => undef,
+          'id' => 'p4_f1[d]',
+          'chimera_breakpoint' => undef,
+          'chimera' => 0,
+          'paths' => [
+                       {
+                         'aln_ma' => '3431',
+                         'ref_hit_from' => '3940929',
+                         'aln_ins' => '0',
+                         'ref_hit_len' => '3432',
+                         'cdna_direction' => 'indeterminate',
+                         'genomic_pos' => 'EcGen:3,940,929..3,937,498 (- strand)',
+                         'number_of_exons' => '1',
+                         'qry_trimmed_cov' => '100.0',
+                         'amino_acid_changes' => '',
+                         'ref_hit_to' => '3937498',
+                         'qry_hit_len' => '3432',
+                         'ref_hit_rev' => 1,
+                         'translation' => '2295..3431 (379 aa)',
+                         'ref_hit_strand' => '-',
+                         'aln_del' => '0',
+                         'aln_mm' => '1',
+                         'ref_len' => '4639675',
+                         'qry_hit_to' => '3432',
+                         'qry_trimmed_from' => '1',
+                         'qry_hit_from' => '1',
+                         'qry_len' => '3432',
+                         'qry_trimmed_len' => '3432',
+                         'accessions' => 'gi|49175990|ref|NC_000913.2|:3,937,498..3,940,929 (out of 4639675 bp)',
+                         'qry_trimmed_to' => '3432',
+                         'aln_idy' => '100.0',
+                         'qry_cov' => '100.0',
+                         'ref_id' => 'gi|49175990|ref|NC_000913.2|'
+                       }
+                     ]
+        }

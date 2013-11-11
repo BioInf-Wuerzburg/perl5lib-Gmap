@@ -1,6 +1,6 @@
 package Gmap::Parser;
 
-# $Id$
+# $Id: Parser.pm 55 2013-05-15 11:41:39Z s187512 $
 
 use warnings;
 use strict;
@@ -15,8 +15,8 @@ use Gmap::Record 0.01;
 use List::Util;
 
 our $VERSION = '0.01';
-our ($REVISION) = '$Revision$' =~ /(\d+)/;
-our ($MODIFIED) = '$Date$' =~ /Date: (\S+\s\S+)/;
+our ($REVISION) = '$Revision: 55 $' =~ /(\d+)/;
+our ($MODIFIED) = '$Date: 2013-05-15 13:41:39 +0200 (Wed, 15 May 2013) $' =~ /Date: (\S+\s\S+)/;
 
 
 

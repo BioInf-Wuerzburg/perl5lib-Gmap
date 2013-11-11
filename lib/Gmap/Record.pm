@@ -3,7 +3,7 @@ package Gmap::Record;
 use warnings;
 use strict;
 
-# $Id$
+# $Id: Record.pm 55 2013-05-15 11:41:39Z s187512 $
 
 # preference libs in same folder over @INC
 use lib '../';
@@ -16,8 +16,8 @@ use overload
 
 
 our $VERSION = '0.01';
-our ($REVISION) = '$Revision$' =~ /(\d+)/;
-our ($MODIFIED) = '$Date$' =~ /Date: (\S+\s\S+)/;
+our ($REVISION) = '$Revision: 55 $' =~ /(\d+)/;
+our ($MODIFIED) = '$Date: 2013-05-15 13:41:39 +0200 (Wed, 15 May 2013) $' =~ /Date: (\S+\s\S+)/;
 
 ##------------------------------------------------------------------------##
 
@@ -128,14 +128,17 @@ sub new{
 	if(@_){
 		if(@_%2){ # input is string to split
 			my %self;
-			my ($paths, $alns);
-			(@self{'id','desc'}, $paths, $alns) = shift =~ m/
+			my $paths_alns;
+			my $string = shift;
+			(@self{'id','desc'}, $paths_alns) = $string =~ m/
 				(?:>?(\S*))					# id, >? for records
 				(?:[^\S\n]([^\n]+))?\n		# desc, optional
-				(Paths.+)\n(Alignments.+)	# Paths and Alignments
+				(Paths.+)	# Paths and Alignments
 			/xs;
 								# . includes \n
-			my $paths_desc;
+			my ($paths, $alns) = split(/\nAlignments/, $paths_alns);
+			
+			my $paths_desc; 
 			($paths_desc, $paths) = split(/\n/, $paths, 2);
 			my @paths = split(/\n\n/, $paths);
 			if(@paths){
@@ -152,15 +155,41 @@ sub new{
 				for(my $i=0; $i<@paths; $i++){
 					my ($path_desc, $body) = split(/\n/, $paths[$i], 2);
 					#$self->{paths}[$i]{desc} = $path_desc;
+					# Path 1: query 3000..4000 (1001 bp) => genome ref000001|lambda_NEB3011:3,000..4,000 (1001 bp)
+					# 				qry_hit_from
+					# 					  qry_hit_to
+					# 							qry_hit_len
+					# 											   ref_id
+					# 																		ref_hit_from
+					# 																			   ref_hit_to
+					# 																					  ref_hit_strand (-)
+					# 																					  ref_hit_len
+											
 					@{$self->{paths}[$i]}{qw(
 						qry_hit_from
 						qry_hit_to
 						qry_hit_len
+						ref_id
 						ref_hit_from
 						ref_hit_to
 						ref_hit_strand
 						ref_hit_len
-					)} = $path_desc =~ m/(\d+)\.\.(\d+)\D+(\d+).+?([\d,]+)\.\.([\d,]+)\D+?(-?)(\d+)/; 
+					)} = $path_desc =~ m/
+						(\d+)		# qry_hit_from
+						\.\.
+						(\d+)		# qry_hit_to
+						\D+
+						(\d+)		# qry_hit_len
+						.+?
+						(\S+)		# ref_id
+						:
+						([\d,]+)	# ref_hit_from
+						\.\.
+						([\d,]+)	# ref_hit_to
+						\D+?
+						(-?)		# ref_hit_strand
+						(\d+)		# ref_hit_len
+					/x; 
 					
 					$self->{paths}[$i]{ref_hit_from} =~ tr/,//d;
 					$self->{paths}[$i]{ref_hit_to} =~ tr/,//d;
@@ -183,14 +212,20 @@ sub new{
 					}@body;
 					
 					# coverage
-					($body{qry_cov}, $body{qry_len}) = $body{coverage} =~ m/(^[.\d]+)\D+(\d+)/;
+					($body{qry_cov}, $body{qry_len}) 
+						= $body{coverage} =~ m/(^[.\d]+)\D+(\d+)/;
 					delete $body{coverage};
 					# trimmed coverage
-					($body{qry_trimmed_cov}, $body{qry_trimmed_len}, $body{qry_trimmed_from}, $body{qry_trimmed_to}) = $body{trimmed_coverage} =~ m/(^[.\d]+)\D+(\d+)\D+(\d+)\.\.(\d+)/;
+					($body{qry_trimmed_cov}, $body{qry_trimmed_len}, $body{qry_trimmed_from}, $body{qry_trimmed_to})
+						 = $body{trimmed_coverage} =~ m/(^[.\d]+)\D+(\d+)\D+(\d+)\.\.(\d+)/;
 					delete $body{trimmed_coverage};
 					# percent_identity
-					($body{aln_idy}, $body{aln_ma}, $body{aln_mm}, $body{aln_ins}, $body{aln_del}) = $body{percent_identity} =~ m/(^[.\d]+)\D+(\d+)\D+(\d+)\D+(\d+)\D+(\d+)/;
+					($body{aln_idy}, $body{aln_ma}, $body{aln_mm}, $body{aln_ins}, $body{aln_del})
+						= $body{percent_identity} =~ m/(^[.\d]+)\D+(\d+)\D+(\d+)\D+(\d+)\D+(\d+)/;
 					delete $body{percent_identity};
+					# accessions
+					($body{ref_len}) = $body{accessions} =~ m/out of (\d+) bp/;
+					
 					
 					$self->{paths}[$i] = {%{$self->{paths}[$i]}, %body};
 				}	

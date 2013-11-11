@@ -24,8 +24,8 @@ my ($gp, $gp_string);
 
 =cut
 
-my $Dat_file = "05gmap_record.dat"; # data
-my $Dmp_file = "05gmap_record.dmp"; # data structure dumped
+my $Dat_file = "01gmap_record.dat"; # data
+my $Dmp_file = "01gmap_record.dmp"; # data structure dumped
 
 my $Dat = do { local $/; local @ARGV = $Dat_file; <> }; # slurp data to string
 my @Dat = split(/(?<=\n)(?=>)/, $Dat);
