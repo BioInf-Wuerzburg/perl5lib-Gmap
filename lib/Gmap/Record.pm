@@ -3,8 +3,6 @@ package Gmap::Record;
 use warnings;
 use strict;
 
-# $Id: Record.pm 55 2013-05-15 11:41:39Z s187512 $
-
 # preference libs in same folder over @INC
 use lib '../';
 
@@ -16,8 +14,6 @@ use overload
 
 
 our $VERSION = '0.01';
-our ($REVISION) = '$Revision: 55 $' =~ /(\d+)/;
-our ($MODIFIED) = '$Date: 2013-05-15 13:41:39 +0200 (Wed, 15 May 2013) $' =~ /Date: (\S+\s\S+)/;
 
 ##------------------------------------------------------------------------##
 
@@ -38,6 +34,8 @@ Class for handling records of Gmap summary files.
 =head2 0.01
 
 =over
+
+=item [BugFix] Regex now also works on records with hidden alignment section.
 
 =item [Init] Initial module. Provides Constructor and generic accessor 
  methods.
