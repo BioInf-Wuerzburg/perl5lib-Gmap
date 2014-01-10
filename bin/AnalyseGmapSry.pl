@@ -7,19 +7,32 @@ use strict;
 
 use Getopt::Long;
 use Pod::Usage;
+use Data::Dumper;
+$Data::Dumper::Sortkeys = 1;
+use Log::Log4perl qw(:easy :no_extra_logdie_message);
 
 use FindBin qw($RealBin);
-use lib "$RealBin/../lib/";
-
 use List::Util;
 
-use Verbose;
-use Verbose::ProgressBar;
 
+
+use lib "$RealBin/../lib/";
 use Gmap::Record;
 use Gmap::Parser;
 
 our $VERSION = '0.01';
+
+Log::Log4perl->init(\<<'CFG');
+	log4perl.logger.main				= DEBUG, Screen
+	log4perl.appender.Screen			= Log::Log4perl::Appender::Screen
+	log4perl.appender.Screen.stderr		= 0
+	log4perl.appender.Screen.layout		= PatternLayout
+	log4perl.appender.Screen.layout.ConversionPattern = [%d{yy-MM-dd HH:mm:ss}] [blat.pl] %m%n
+
+CFG
+
+my $L = Log::Log4perl::get_logger();
+$L->level($INFO);
 
 =head1 NAME
 
@@ -28,6 +41,16 @@ AnalyseGmapSry - Parse Gmap summary file and create stats.
 =cut
 
 =head1 CHANGELOG
+
+=head2 0.02
+
+=over
+
+=item [Change] Log::Log4perl replaces Verbose module.
+
+=item [Change] Condensed Getopt reading, values to hash only.
+
+=back
 
 =head2 0.01
 
@@ -50,7 +73,6 @@ AnalyseGmapSry - Parse Gmap summary file and create stats.
 
 
 
-
 ##------------------------------------------------------------------------##
 
 =head1 SYNOPSIS
@@ -61,39 +83,21 @@ AnalyseGmapSry - Parse Gmap summary file and create stats.
 
 =head1 OPTIONS
 
-=cut
-
 =over
-
-=cut
-
-my %opt;
 
 =item [--in=<FASTA/FASTQ>]
 
 Input FASTA/FASTQ file. Default STDIN.
 
-=cut
-
-$opt{'in=s'} = \(my $opt_in = undef);
-
 =item [--out=<STRING>]
 
 Output file. Default off. Specify '-' for STDOUT.
-
-=cut
-
-$opt{'out=s'} = \(my $opt_out = undef);
 
 =item [--ref-cov=<-/FILE>]
 
 Calculate and output per base coverage of reference sequences. Only 
  sequences with at least one hit are reported. Default off. Specify 
  '-' for STDOUT, or a FILE to write to.
-
-=cut
-
-$opt{'ref-cov=s'} = \(my $opt_ref_cov = undef);
 
 =item [--allow-edge-mappings] [OFF]
 
@@ -103,39 +107,34 @@ When dealing with fragmented or circular references, reads might be
  dropped and might also look like chimeras. To prevent these artefacts
  mappings over reference ends are by default ignored.
 
-=cut
+=item --quiet | --debug
 
-$opt{'allow-edge-mappings!'} = \(my $opt_edge_mappings = undef);
-
-=item --verbose=<INT>
-
-Toggle verbose level, default 2, which outputs statistics and progress.
-Set 1 for statistics only, 0 for no verbose output and 3 for debug level
-messages.
-
-=cut 
-
-$opt{'verbose=i'} = \(my $opt_verbose = 3);
+Decrease/increase verbose level.
 
 =item [--help]
 
 Display this help
 
-=cut
-
-$opt{'help|?'} = \(my $opt_help);
-
 =back
 
 =cut
 
-GetOptions(%opt) or pod2usage(1);
-pod2usage(1) if $opt_help;
+my %opt = (
+);
 
-if($opt_verbose > 2){
-	use Data::Dumper;
-	$Data::Dumper::Sortkeys = 1;
-} 
+Getopt::Long::Configure("no_ignore_case");
+GetOptions(\%opt, qw(
+	in=s
+	out=s
+	ref_cov|ref-cov=s
+	allow_edge_mappings|allow-edge-mappings!
+	quiet
+	debug
+	help|h
+)) or pod2usage(1);
+
+pod2usage(1) if $opt{help};
+
 
 ##------------------------------------------------------------------------##
 
@@ -147,14 +146,10 @@ if($opt_verbose > 2){
 
 =cut
 
-my $V = Verbose->new(
-	level => 1,
-	report_level => $opt_verbose,
-	line_width => 80,
-	
+my %S = (
+	p0 => [], # 0 == chimeric
 );
-
-my ($MA, $MM, $INS, $DEL, $Dropped,$Unmapped, $Record_count, $Chimera_count) = (0,0,0,0,0,0,0,0);
+my ($Unmapped, $Record_count, $Chimera_count, $Edge_mapped) = (0,0,0);
 my %REF_COV;
 
 ##------------------------------------------------------------------------##
@@ -164,10 +159,10 @@ my %REF_COV;
 
 =cut
 
-$V->verbose("Reading ".( $opt_in ? $opt_in : "<&STDIN" ));
+$L->info("Reading ".( $opt{in} ? $opt{in} : "<&STDIN" ));
 
-my $gp = Gmap::Parser->new(file => $opt_in)->check_format() 
-	|| $V->exit("Data does not look like gmap summary"); # defaults to &STDIN
+my $gp = Gmap::Parser->new(file => $opt{in})->check_format() 
+	|| $L->exit("Data does not look like gmap summary"); # defaults to &STDIN
 
 
 =head2 loop
@@ -176,69 +171,95 @@ my $gp = Gmap::Parser->new(file => $opt_in)->check_format()
 
 while(my $r = $gp->next_record){
 	$Record_count++;
-	unless(@{$r->{paths}}){
+	my $pc = @{$r->{paths}};
+	unless($pc){
 		$Unmapped++;
 	}else{
+		if ($r->{chimera}){
+			$pc = 0;
+		};
+		
+		# analyse primary path: path "0""
 		my $p0 = $r->{paths}[0];
 		
-		unless($opt_edge_mappings){
+		## exclude
+		# edge mappings
+		unless($opt{allow_edge_mappings}){
 			# check if mapping is to close to an end
-			next if $p0->{qry_len} > $p0->{ref_hit_to};
-			next if $p0->{qry_len} > $p0->{ref_len} - $p0->{ref_hit_from};
-		}
-		
-		$MA+=$p0->{aln_ma};
-		$MM+=$p0->{aln_mm};
-		$INS+=$p0->{aln_ins};
-		$DEL+=$p0->{aln_del};
-
-		if($opt_ref_cov){
-			# init ref cov
-			unless(exists $REF_COV{$p0->{ref_id}}){
-				$REF_COV{$p0->{ref_id}} = [(0)x $p0->{ref_len}];
+			if(
+				$p0->{qry_len} > $p0->{ref_hit_to}
+				|| 
+				$p0->{qry_len} > $p0->{ref_len} - $p0->{ref_hit_from}
+			){
+				$Edge_mapped++;
+				next; 
 			}
-			map{$_++}@{$REF_COV{$p0->{ref_id}}}[$p0->{ref_hit_from}..$p0->{ref_hit_to}];
 		}
+		# N's (ref/qry)
+		
+		$S{p0}[$pc]{ma} +=$p0->{aln_ma};
+		$S{p0}[$pc]{mm} +=$p0->{aln_mm};
+		$S{p0}[$pc]{in} +=$p0->{aln_ins};
+		$S{p0}[$pc]{de} +=$p0->{aln_del};
+
+#		if($opt{ref_cov}){
+#			# init ref cov
+#			unless(exists $REF_COV{$p0->{ref_id}}){
+#				$REF_COV{$p0->{ref_id}} = [(0)x $p0->{ref_len}];
+#			}
+#			map{$_++}@{$REF_COV{$p0->{ref_id}}}[$p0->{ref_hit_from}..$p0->{ref_hit_to}];
+#		}
 		if($r->{chimera}){
 			my $p1 = $r->{paths}[1];
 			$Chimera_count++;
-			$MA+=$p1->{aln_ma};
-			$MM+=$p1->{aln_mm};
-			$INS+=$p1->{aln_ins};
-			$DEL+=$p1->{aln_del};
+			$S{p0}[$pc]{ma} +=$p1->{aln_ma};
+			$S{p0}[$pc]{mm} +=$p1->{aln_mm};
+			$S{p0}[$pc]{in} +=$p1->{aln_ins};
+			$S{p0}[$pc]{de} +=$p1->{aln_del};
 
-			$Dropped+=($p0->{qry_len}-$p0->{qry_hit_len}-$p1->{qry_hit_len});
+			$S{p0}[$pc]{dr} += ($p0->{qry_len}-$p0->{qry_hit_len}-$p1->{qry_hit_len});
 			
-			if($opt_ref_cov){
-				# init ref cov
-				unless(exists $REF_COV{$p1->{ref_id}}){
-					$REF_COV{$p1->{ref_id}} = [(0)x $p1->{ref_len}];
-				}
-				map{$_++}@{$REF_COV{$p1->{ref_id}}}[$p1->{ref_hit_from}..$p1->{ref_hit_to}];
-			}
+#			if($opt{ref_cov}){
+#				# init ref cov
+#				unless(exists $REF_COV{$p1->{ref_id}}){
+#					$REF_COV{$p1->{ref_id}} = [(0)x $p1->{ref_len}];
+#				}
+#				map{$_++}@{$REF_COV{$p1->{ref_id}}}[$p1->{ref_hit_from}..$p1->{ref_hit_to}];
+#			}
 		}else{
-			$Dropped+=($p0->{qry_len}-$p0->{qry_hit_len});
+			$S{p0}[$pc]{dr} += ($p0->{qry_len}-$p0->{qry_hit_len});
 		}
 	}
 }
 
-my $TOT = $MM+$MA+$INS+$DEL+$Dropped;
-my $pat="%10s: %10s %8s %8.2f%%\n";
-printf "%10s: %10s %8s %8s\n", '', qw(bp reads resp_%);
-printf $pat, 'Matches', $MA, '', $MA/$TOT*100;
-printf $pat, 'Mismatches', $MM, '', $MM/$TOT*100;
-printf $pat, 'Inserts', $INS, '', $INS/$TOT*100;
-printf $pat, 'Deletions', $DEL, '', $DEL/$TOT*100;
-printf $pat, 'Dropped', $Dropped, '', $Dropped/$TOT*100;
+#print Dumper($S{p0});
+
+foreach my $i (1..@{$S{p0}}-1, 0){
+	my $p = $i || "Chimera";
+	print Dumper($p, $S{p0}[$i]);
+}
+
+my $pat ="%10s: %10s %8s %8.2f%%\n";
+
+#my $TOT = $MM+$MA+$INS+$DEL+$Dropped;
+#printf "%10s: %10s %8s %8s\n", '', qw(bp reads resp_%);
+#printf $pat, 'Matches', $MA, '', $MA/$TOT*100;
+#printf $pat, 'Mismatches', $MM, '', $MM/$TOT*100;
+#printf $pat, 'Inserts', $INS, '', $INS/$TOT*100;
+#printf $pat, 'Deletions', $DEL, '', $DEL/$TOT*100;
+#printf $pat, 'Dropped', $Dropped, '', $Dropped/$TOT*100;
 
 printf $pat, 'Unmapped', '', $Unmapped, $Unmapped/$Record_count*100;
 printf $pat, 'Chimeras', '', $Chimera_count, $Chimera_count/$Record_count*100;
+unless($opt{allow_edge_mappings}){
+	printf $pat, 'Edgemapped', '', $Edge_mapped, $Edge_mapped/$Record_count*100;
+}
 
 
-if($opt_ref_cov){
+if($opt{ref_cov}){
 	my $rcfh;
-	unless($opt_ref_cov eq '-'){
-		open($rcfh, '>', $opt_ref_cov) or die "$!: $opt_ref_cov";
+	unless($opt{ref_cov} eq '-'){
+		open($rcfh, '>', $opt{ref_cov}) or die "$!: $opt{ref_cov}";
 	}
 	select $rcfh if $rcfh;
 	print "count\tcov\tref\n";
