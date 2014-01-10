@@ -233,21 +233,22 @@ while(my $r = $gp->next_record){
 }
 
 #print Dumper($S{p0});
+my $pat ="%10s: %10s %8s %8.2f%%\n";
 
 foreach my $i (1..@{$S{p0}}-1, 0){
 	my $p = $i || "Chimera";
-	print Dumper($p, $S{p0}[$i]);
+	#print Dumper($p, $S{p0}[$i]);
+	my ($MA,$MM,$INS,$DEL,$Dropped) = ($S{p0}[$i]{ma}, $S{p0}[$i]{mm}, $S{p0}[$i]{in}, $S{p0}[$i]{de}, $S{p0}[$i]{dr});
+	my $TOT = $MM+$MA+$INS+$DEL+$Dropped;
+	printf "\n%-11s %10s %8s %8s\n", $p, qw(bp reads resp_%);
+	printf $pat, 'Matches', $MA, '', $MA/$TOT*100;
+	printf $pat, 'Mismatches', $MM, '', $MM/$TOT*100;
+	printf $pat, 'Inserts', $INS, '', $INS/$TOT*100;
+	printf $pat, 'Deletions', $DEL, '', $DEL/$TOT*100;
+	printf $pat, 'Dropped', $Dropped, '', $Dropped/$TOT*100;
 }
 
-my $pat ="%10s: %10s %8s %8.2f%%\n";
 
-#my $TOT = $MM+$MA+$INS+$DEL+$Dropped;
-#printf "%10s: %10s %8s %8s\n", '', qw(bp reads resp_%);
-#printf $pat, 'Matches', $MA, '', $MA/$TOT*100;
-#printf $pat, 'Mismatches', $MM, '', $MM/$TOT*100;
-#printf $pat, 'Inserts', $INS, '', $INS/$TOT*100;
-#printf $pat, 'Deletions', $DEL, '', $DEL/$TOT*100;
-#printf $pat, 'Dropped', $Dropped, '', $Dropped/$TOT*100;
 
 printf $pat, 'Unmapped', '', $Unmapped, $Unmapped/$Record_count*100;
 printf $pat, 'Chimeras', '', $Chimera_count, $Chimera_count/$Record_count*100;
