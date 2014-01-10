@@ -238,6 +238,7 @@ my $pat ="%10s: %10s %8s %8.2f%%\n";
 foreach my $i (1..@{$S{p0}}-1, 0){
 	my $p = $i || "Chimera";
 	#print Dumper($p, $S{p0}[$i]);
+	next unless $S{p0}[$i];
 	my ($MA,$MM,$INS,$DEL,$Dropped) = ($S{p0}[$i]{ma}, $S{p0}[$i]{mm}, $S{p0}[$i]{in}, $S{p0}[$i]{de}, $S{p0}[$i]{dr});
 	my $TOT = $MM+$MA+$INS+$DEL+$Dropped;
 	printf "\n%-11s %10s %8s %8s\n", $p, qw(bp reads resp_%);
