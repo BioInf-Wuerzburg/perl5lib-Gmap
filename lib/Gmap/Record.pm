@@ -35,6 +35,8 @@ Class for handling records of Gmap summary files.
 
 =over
 
+=item [BugFix] Skipping body parsing on empty path Seq correctly...
+
 =item [BugFix] Regex now also works on records with hidden alignment section.
 
 =item [Init] Initial module. Provides Constructor and generic accessor 
@@ -137,7 +139,8 @@ sub new{
 			my ($paths, $alns) = split(/\nAlignments/, $paths_alns);
 			
 			my $paths_desc; 
-			($paths_desc, $paths) = split(/\n/, $paths, 2);
+			($paths_desc, $paths) = split(/\n+/, $paths, 2);
+			
 			my @paths = split(/\n\n/, $paths);
 			if(@paths){
 				$paths[-1] =~ s/\n+$//;
