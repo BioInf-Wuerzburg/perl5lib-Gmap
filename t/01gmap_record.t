@@ -66,6 +66,8 @@ subtest 'new' => sub {
 		isa_ok($rec_clone, $Class, "$set cloned");
 		$rec_cp = {%$rec_clone}; #  copy obj to hash to make is_deeply work with overloaded obj..
 		is_deeply( $rec_cp, $Dmp[$i], "$set cloned attributes " );
+	
+		#print Dumper($rec);
 	}
 };
 

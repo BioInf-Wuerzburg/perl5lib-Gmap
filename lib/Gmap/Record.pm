@@ -35,6 +35,8 @@ Class for handling records of Gmap summary files.
 
 =over
 
+=item [BugFix] paths_num contains number of Paths (N) from description
+
 =item [BugFix] Skipping body parsing on empty path Seq correctly...
 
 =item [BugFix] Regex now also works on records with hidden alignment section.
@@ -141,6 +143,8 @@ sub new{
 			my $paths_desc; 
 			($paths_desc, $paths) = split(/\n+/, $paths, 2);
 			
+			($self->{paths_num}) = $paths_desc =~ /Paths \((\d+)\)/;
+			
 			my @paths = split(/\n\n/, $paths);
 			if(@paths){
 				$paths[-1] =~ s/\n+$//;
@@ -152,6 +156,7 @@ sub new{
 					$self->{chimera} = 0;
 					$self->{chimera_breakpoint} = undef;
 				}
+
 				
 				for(my $i=0; $i<@paths; $i++){
 					my ($path_desc, $body) = split(/\n/, $paths[$i], 2);

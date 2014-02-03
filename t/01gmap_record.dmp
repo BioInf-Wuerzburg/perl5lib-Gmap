@@ -1,7 +1,8 @@
-{
+{ #set1
           'desc' => 'some desc',
           'byte_offset' => undef,
           'chimera_breakpoint' => undef,
+          'paths_num' => 1,
           'id' => '1',
           'paths' => [
                        {
@@ -36,10 +37,11 @@
                      ],
           'chimera' => 0
 },
-{
+{ #set2
           'desc' => '',
           'byte_offset' => undef,
           'chimera_breakpoint' => '1000',
+          'paths_num' => 4,
           'id' => '2',
           'paths' => [
                        {
@@ -102,10 +104,11 @@
                      ],
           'chimera' => 1
 },
-{
+{ #set3
           'desc' => 'SUBSTR:5,1074 SUBSTR:297,43',
           'byte_offset' => undef,
           'chimera_breakpoint' => undef,
+          'paths_num' => 1,
           'id' => 'm111006_202713_42141_c100202382555500000315044810141104_s1_p0/318/0_1136.5',
           'paths' => [
                        {
@@ -140,16 +143,18 @@
                      ],
           'chimera' => 0
 },
-{
+{ #set4
           'desc' => 'SUBSTR:5,1074 SUBSTR:344,28',
           'byte_offset' => undef,
           'id' => 'm111006_202713_42141_c100202382555500000315044810141104_s1_p0/318/0_1136.6',
           'paths' => [],
+          'paths_num' => 0,
 },
 {
           'desc' => 'SUBSTR:237,639 SUBSTR:0,627',
           'byte_offset' => undef,
           'chimera_breakpoint' => undef,
+          'paths_num' => 1,
           'id' => 'm111006_202713_42141_c100202382555500000315044810141104_s1_p0/321/0_1046.1',
           'paths' => [
                        {
@@ -190,6 +195,7 @@
           'byte_offset' => undef,
           'id' => 'p4_f1[d]',
           'chimera_breakpoint' => undef,
+          'paths_num' => 1,
           'chimera' => 0,
           'paths' => [
                        {
